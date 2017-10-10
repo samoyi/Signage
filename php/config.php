@@ -1,4 +1,4 @@
-﻿<pre><?php
+<pre><?php
 
 require_once('MySQLiController.class.php');
 $MySQLiController = new MySQLiController( $dbr );

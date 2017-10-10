@@ -309,15 +309,40 @@ class MySQLiController
     {
     	$query = 'SELECT * FROM ' . $tableName . ' WHERE ' . $where;
     	$result = $this->dbr->query( $query );
-    	if( $result )
-			{
-				return $result;
-			}
-			else
-			{
-				echo "<p>could not get row</p>";
-			}
+    	if( $result ){
+			return $result;
+		}
+		else{
+			echo "<p>could not get rows</p>";
+		}
     }
+
+	// 获取所有行的数据
+	public function getAll($tableName){
+		$query = 'SELECT * FROM ' . $tableName;
+    	$result = $this->dbr->query( $query );
+    	if( $result ){
+			return $result;
+		}
+		else{
+			echo "<p>could not get rows</p>";
+		}
+	}
+
+	// 某一列的所有不重复的值组成的数组
+	/*
+	 * 例如一列是保存学历，则该方法返回的结果是各种学历组成的数组
+	 */
+	public function getTypes($tableName, $col){
+		$query = 'SELECT DISTINCT ' .$col. ' FROM ' .$tableName;
+		$result = $this->dbr->query( $query );
+		if( $result ){
+			return $result;
+		}
+		else{
+			echo "<p>could not get types</p>";
+		}
+	}
 
 
     // 按照某一列的值来排序。该函数的返回值需要循环使用fetch_array来以此取值

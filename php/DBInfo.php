@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
     define('DB_ADDRESS', 'rm-bp136x2k5h271dnvc.mysql.rds.aliyuncs.com'); //数据库连接地址
     define('DB_USER', 'rnqq7e1d2v'); //数据库用户名

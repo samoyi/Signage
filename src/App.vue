@@ -5,11 +5,18 @@
         </header>
         <main>
             <nav class="nav">
-                <ul>
-                    <li @click="getInfo">info</li>
-                </ul>
+                <router-link
+                    v-for="post in posts"
+                    active-class="is-active"
+                    class="link"
+                    key="post.title"
+                    :to="{ name: 'post', params: { id: post } }">
+                    {{post}}
+                </router-link>
             </nav>
-            <div class="content">{{content}}</div>
+            <div class="content">
+                <router-view></router-view>
+            </div>
         </main>
     </div>
 </template>
@@ -22,20 +29,28 @@ export default {
     data () {
         return {
             content: '',
-
+            posts: null,
         }
     },
     methods: {
-        getInfo(){
-            axios.get('http://localhost/gits/Signage/php/ajax.php?act=info&brand=ankela')
+        getBrands(){
+            axios.get('http://localhost/gits/Signage/php/ajax.php', {
+                    params: {
+                        act: 'brands',
+                    }
+                })
                 .then(response=>{
-                    this.content = JSON.parse(response.data.trim()); // TODO why leading spaces
+                    console.log(response)
+                    this.posts = response.data; // TODO why leading spaces
                     // console.log(this.content);
                 })
                 .catch(error=>{
                     console.error(error);
                 })
         }
+    },
+    created() {
+        this.getBrands();
     },
 }
 </script>
