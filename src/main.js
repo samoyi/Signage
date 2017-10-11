@@ -14,10 +14,14 @@ const router = new Router({
             component: Hello,
         },
         {
-            path: '/post',
-            name: 'post',
+            path: '/post/:id',
             component: Post,
         },
+        // {
+        //     path: '/post/ankela',
+        //     name: 'ankela',
+        //     component: Post,
+        // },
     ],
 });
 

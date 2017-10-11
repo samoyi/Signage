@@ -12,23 +12,18 @@ class Signage{
 
 
     public function getSignageInfo(){
-        $result = $this->mySQLiController->getAll(TABLE);
-        $aSignage = array();
-        while( $row = $result->fetch_array() ){
-            $aSignage[] = $row;
-        }
+        $result = $this->mySQLiController->getAll(TABLE, 'brand');
         $this->dbr->close();
-        return $aSignage ;
+        return $result;
     }
 
     public function getBrands(){
         $result = $this->mySQLiController->getTypes(TABLE, 'brand');
-        $aBrand = array();
-        while( $row = $result->fetch_array() ){
-            $aBrand[] = $row[0];
-        }
-        file_put_contents('br.txt', json_encode($aBrand));
         $this->dbr->close();
+        $aBrand = array();
+        foreach($result as $brand){
+            $aBrand[] = $brand[0];
+        }
         return $aBrand;
     }
 

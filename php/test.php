@@ -12,5 +12,4 @@ print_r($aSignage);
 
 
 
-
 ?></pre>

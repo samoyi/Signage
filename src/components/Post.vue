@@ -1,6 +1,6 @@
 <template>
     <div class="post" v-if="info">
-        <h1 class="post__title">客户名：{{ info[0].brand }}</h1>
+        <h1 class="post__title">客户名：{{ $route.params.id }}</h1>
         <table cellSpacing=0>
             <tr>
                 <th>版本号</th>
@@ -36,6 +36,7 @@
 import axios from 'axios';
 
 export default {
+    props: ['id'],
     data(){
         return {
             info: null,
@@ -47,8 +48,8 @@ export default {
                     params: { act: 'info' }
                 })
                 .then(response=>{
-                    console.log(typeof response.data);
-                    this.info = response.data; // TODO why leading spaces
+                    console.log(this.id);
+                    this.info = response.data[this.id]; // TODO why leading spaces
                 })
                 .catch(error=>{
                     console.error(error);

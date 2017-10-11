@@ -43,6 +43,14 @@ class MySQLiController
         return $aKeyInfo['Column_name'];
     }
 
+	protected function fetchArray($result){
+		$rows = array();
+	    while( $row=$result->fetch_array() ){
+	        $rows[] = $row;
+	    }
+	    return $rows;
+	}
+
 
     // 属性 ——————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
@@ -188,25 +196,26 @@ class MySQLiController
     }
 
 
-    //返回所有的数据库  该函数的返回值需要循环使用fetch_array来依次取得每个数据库
+    //返回所有的数据库组成的数组
     public function showDatabases()
     {
         $query = 'SHOW DATABASES';
-        return mysqli_query($this->dbr, $query);
+        $result = mysqli_query($this->dbr, $query);
+		return $this->fetchArray($result);
     }
 
-    //返回数据库的所有表  该函数的返回值需要循环使用fetch_array来依次取得每个表
-    public function showTables()
-    {
+    //返回数据库的所有表组成的数组
+    public function showTables(){
         $query = 'SHOW TABLES';
-        return mysqli_query($this->dbr, $query);
+		$result = mysqli_query($this->dbr, $query);
+        return $this->fetchArray($result);
     }
 
-    //返回传递表格每列的模式信息  该函数的返回值需要循环使用fetch_array来依次取得每个列的信息
-    public function describeTable($tableName)
-    {
+    //返回传递表格每列的模式信息组成的数组
+    public function describeTable($tableName){
         $query = 'DESCRIBE ' . $tableName ;
-        return mysqli_query($this->dbr, $query);
+		$result = mysqli_query($this->dbr, $query);
+        return $this->fetchArray($result);
     }
 
     /* TODO 不对
@@ -251,8 +260,7 @@ class MySQLiController
     // 表结构相关——————————————————————————————————————————————————————————————————
 
     // 获得某列信息
-    public function getColumnInfoArray($tableName, $sColumn )
-    {
+    public function getColumnInfoArray($tableName, $sColumn ){
         $query = 'SHOW FIELDS FROM ' . $tableName . ' where Field ="' . $sColumn . '"';
         $result = mysqli_query($this->dbr, $query);
         return $result->fetch_array();
@@ -267,18 +275,15 @@ class MySQLiController
     // 内容行相关——————————————————————————————————————————————————————————————————
 
 
-
     //获得总行数
     public function allLineNum($tableName, $where="")
     {
 		if($where){
-
 			$query = 'SELECT *  FROM ' . $tableName . ' WHERE ' . $where;
 		}
 		else{
 			$query = 'SELECT *  FROM ' . $tableName;
 		}
-
         return mysqli_num_rows(mysqli_query($this->dbr, $query) );
     }
 
@@ -304,13 +309,13 @@ class MySQLiController
         }
     }
 
-    //取得符合WHERE条件的一个或多个row。该函数的返回值需要循环使用fetch_array来依次取值
+    //取得符合WHERE条件的一个或多个row组成的数组
     public function getRow($tableName, $where )
     {
     	$query = 'SELECT * FROM ' . $tableName . ' WHERE ' . $where;
     	$result = $this->dbr->query( $query );
     	if( $result ){
-			return $result;
+			return $this->fetchArray($result);
 		}
 		else{
 			echo "<p>could not get rows</p>";
@@ -318,11 +323,29 @@ class MySQLiController
     }
 
 	// 获取所有行的数据
-	public function getAll($tableName){
+	/*
+	 * @para $col 可以传入一个列名，结果将按照该列数据进行分类
+	 *            例如一个用户学历表中，如果传入学历的列名，则返回的结果是按照不同
+	 *                学历分组的用户信息行
+	 */
+	public function getAll($tableName, $col=""){
 		$query = 'SELECT * FROM ' . $tableName;
     	$result = $this->dbr->query( $query );
     	if( $result ){
-			return $result;
+			if( empty($col) ){
+				return $this->fetchArray($result);
+			}
+			else{
+				$grouped = array();
+				while( $row=$result->fetch_array() ){
+					if (isset($grouped[$row[$col]])) {
+						$grouped[$row[$col]][] = $row;
+					} else {
+						$grouped[$row[$col]] = array($row);
+					}
+				}
+				return $grouped;
+			}
 		}
 		else{
 			echo "<p>could not get rows</p>";
@@ -337,7 +360,7 @@ class MySQLiController
 		$query = 'SELECT DISTINCT ' .$col. ' FROM ' .$tableName;
 		$result = $this->dbr->query( $query );
 		if( $result ){
-			return $result;
+			return $this->fetchArray($result);
 		}
 		else{
 			echo "<p>could not get types</p>";
@@ -345,7 +368,7 @@ class MySQLiController
 	}
 
 
-    // 按照某一列的值来排序。该函数的返回值需要循环使用fetch_array来以此取值
+    // 返回所有行组成的数组，该数组按照某一列的值来排序
     // $col参数是用来排序的列，默认降序排列，$asc参数如果为true，则为升序
     public function getDataByRank($tableName, $where="", $col, $asc=false)
     {
@@ -357,12 +380,10 @@ class MySQLiController
 
         $query = 'SELECT * FROM ' . $tableName . $where . ' ORDER BY ' . $col . $asc;
         $result = $this->dbr->query( $query );
-        if( $result )
-		{
-			return $result;
+        if( $result ){
+			return $this->fetchArray($result);
 		}
-		else
-		{
+		else{
 			echo json_encode($result);
 		}
     }
@@ -379,16 +400,14 @@ class MySQLiController
     }
 
     //某列最大值
-    public function getMaxValue($tableName, $column)
-    {
+    public function getMaxValue($tableName, $column){
         $query = mysqli_query($this->dbr, 'SELECT MAX(' . $column . ') FROM ' . $tableName);
         $row = $query->fetch_row();
         return $row[0];
     }
 
     //某列最小值的所在行
-    public function getMinRow($tableName, $column)
-    {
+    public function getMinRow($tableName, $column){
         $query = 'SELECT * FROM ' . $tableName . ' WHERE ' . $column . '=' . $this->getMinValue($tableName, $column);
         $result = mysqli_query( $this->dbr, $query );
         $row = $result->fetch_array();
@@ -396,44 +415,36 @@ class MySQLiController
     }
 
     //某列最小值
-    public function getMinValue($tableName, $column)
-    {
+    public function getMinValue($tableName, $column){
         $query = mysqli_query($this->dbr, 'SELECT MIN(' . $column . ') FROM ' . $tableName);
         $row = $query->fetch_array();
         return $row[0];
     }
 
     //输出某一列平均值
-    public function average($tableName, $column )
-    {
+    public function average($tableName, $column ){
         $query = mysqli_query($this->dbr, 'SELECT AVG(' . $column . ') AS average FROM ' . $tableName);
         $row =$query->fetch_array();
         return $row['average'];
     }
 
     //输出某一列的值大于或者大于等于某个值的行数。例如及格的人数。第三个可选参数是否闭区间
-    public function getAboveLineNum($tableName, $column, $value, $closed=true )
-    {
-        if( $closed )
-        {
+    public function getAboveLineNum($tableName, $column, $value, $closed=true ){
+        if( $closed ){
             $query = 'SELECT * FROM ' . $tableName . ' WHERE ' . $column . '>=' . $value;
         }
-        else
-        {
+        else{
              $query = 'SELECT * FROM ' . $tableName . ' WHERE ' . $column . '>' . $value;
         }
-        if( $result = mysqli_query($this->dbr, $query) )
-        {
+        if( $result = mysqli_query($this->dbr, $query) ){
             $overlineNum = 0;
-            while($row = $result->fetch_array())
-            {
+            while($row = $result->fetch_array()){
                 $overlineNum++;
             }
             return  $overlineNum;
         }
-        else
-        {
-            echo 'hehe';
+        else{
+            return false;
         }
     }
 
@@ -447,19 +458,16 @@ class MySQLiController
 	{
 		$query = 'ALTER TABLE ' . $tableName . ' ADD COLUMN ' . $sColMode;
 		$result = $this->dbr->query( $query );
-		if( $result )
-		{
+		if( $result ){
 			return true;
 		}
-		else
-		{
+		else{
 			return false;
 		}
 	}
 
 	//删除列
-	public function dropColumn($tableName, $sColName)
-	{
+	public function dropColumn($tableName, $sColName){
 
 		$query = 'ALTER TABLE ' . $tableName . ' DROP ' . $sColName;
 		$result = $this->dbr->query( $query );
@@ -474,8 +482,7 @@ class MySQLiController
 	}
 
     // 修改列名
-    public function columnRename($tableName, $sColumn, $sNewname)
-    {
+    public function columnRename($tableName, $sColumn, $sNewname){
         $aColumnInfo = $this->getColumnInfoArray($tableName, $sColumn);
         $sOldName = $aColumnInfo["Field"];
         $sType = $aColumnInfo["Type"];
@@ -484,47 +491,39 @@ class MySQLiController
     }
 
     // 修改列类型
-    public function changeColumnType($tableName, $sColumn, $sType)
-    {
+    public function changeColumnType($tableName, $sColumn, $sType){
         $query = 'ALTER TABLE ' . $tableName . ' MODIFY ' . $sColumn . ' ' . $sType;
         return $result = mysqli_query( $this->dbr, $query );
     }
 
 	//插入新行。第二个参数是列名数组，第三个参数是相应的值数组
-	public function insertRow($tableName, $aCol, $aValue)
-	{
+	public function insertRow($tableName, $aCol, $aValue){
 		$len = count( $aCol );
 		$keys = '';
 		$values = '';
 
-		for($i=0; $i<$len; $i++)
-		{
-			if( $i !== $len-1 )
-			{
+		for($i=0; $i<$len; $i++){
+			if( $i !== $len-1 ){
 				$keys .= $aCol[$i] . ',';
 				$values .= '"' . $this->dbr->real_escape_string($aValue[$i]) . '",';
 			}
-			else
-			{
+			else{
 				$keys .= $aCol[$i] . '';
 				$values .= '"' . $this->dbr->real_escape_string($aValue[$i]) . '"';
 			}
 		}
 		$query  = 'INSERT INTO ' . $tableName . '(' . $keys . ') VALUES (' . $values . ')';
 		$result = $this->dbr->query( $query );
-		if( $result )
-		{
+		if( $result ){
 			return true;
 		}
-		else
-		{
+		else{
 			return false;
 		}
 	}
 
 	//删除行。参数是数组，包含一个或者多个项，每个项是一个WHERE子句
-	public function deleteRow($tableName, $where)
-	{
+	public function deleteRow($tableName, $where){
 		$query = 'DELETE FROM ' . $tableName . ' WHERE (' . $where . ')';
 		$result = $this->dbr->query( $query );
 
@@ -532,8 +531,7 @@ class MySQLiController
 		{
 			return true;
 		}
-		else
-		{
+		else{
 			return false;
 		}
 	}
@@ -544,13 +542,11 @@ class MySQLiController
         $primaryKey = $this->getPrimaryKey();
         $query = 'DELETE FROM ' . $tableName . ' USING ' . $tableName . ',' . $tableName . ' e1 WHERE ' . $tableName . '.' . $primaryKey . ' > e1.' . $primaryKey . ' AND ' . $tableName . '.' . $col . ' = e1.' . $col . '  ';
         $result = $this->dbr->query( $query );
-        if( $result )
-        {
+        if( $result ){
             print "<p>duplicates has been delete</p>";
 
         }
-        else
-        {
+        else{
             print "<p>could not delete duplicates</p>";
         }
     }
@@ -561,8 +557,7 @@ class MySQLiController
 	 */
     public function updateData($tableName, $aLocValueCol, $aNewValue, $where)
     {
-        if( sizeof($aLocValueCol) !== sizeof($aNewValue))
-        {
+        if( sizeof($aLocValueCol) !== sizeof($aNewValue)){
             throw new Exception('要更改的列数和提供的更改值数目不对应');
             return false;
         }
@@ -571,26 +566,22 @@ class MySQLiController
             $value . '="' .  $aNewValue[$key] . '",';
         }*/
         $sUpdate = '';
-        foreach($aLocValueCol as $key=>$value)
-        {
+        foreach($aLocValueCol as $key=>$value){
             $sUpdate .= $value . '="' .  $aNewValue[$key] . '",';
         }
         $sUpdate = substr($sUpdate, 0, -1);//删除最后一个逗号
         $query = 'UPDATE ' . $tableName . ' SET ' . $sUpdate . ' WHERE ' . $where;
         $result = $this->dbr->query( $query );
-        if( $result )
-        {
+        if( $result ){
             return true;
         }
-        else
-        {
+        else{
             return false;
         }
     }
 
 	// Increase or Decrease
-	public function increase($tableName, $sCol, $where, $bDecrease=false)
-	{
+	public function increase($tableName, $sCol, $where, $bDecrease=false){
 		$result = $this->getRow($tableName, $where);
 		$row = $result->fetch_array();
 		if( is_numeric($row[$sCol])){
@@ -611,16 +602,13 @@ class MySQLiController
 
 
 	// 将一列改为同一个值
-	public function unifyColumn($tableName, $sCol, $value)
-	{
+	public function unifyColumn($tableName, $sCol, $value){
 		$query = 'UPDATE ' . $tableName . ' SET ' . $sCol . '=' . $value;
         $result = $this->dbr->query( $query );
-        if( $result )
-        {
+        if( $result ){
             return true;
         }
-        else
-        {
+        else{
             return false;
         }
 	}

@@ -10,12 +10,12 @@
                     active-class="is-active"
                     class="link"
                     key="post.title"
-                    :to="{ name: 'post', params: { id: post } }">
+                    :to="'/post/'+post">
                     {{post}}
                 </router-link>
             </nav>
             <div class="content">
-                <router-view></router-view>
+                <router-view :id="$route.params.id"></router-view>
             </div>
         </main>
     </div>
@@ -23,7 +23,7 @@
 
 <script>
 import axios from 'axios';
-
+// :to="{ name: '/post/'+post, params: { id: post } }">
 export default {
     name: 'app',
     data () {
@@ -41,8 +41,7 @@ export default {
                 })
                 .then(response=>{
                     console.log(response)
-                    this.posts = response.data; // TODO why leading spaces
-                    // console.log(this.content);
+                    this.posts = response.data.map((item)=>item.toLowerCase()).sort(); // TODO why leading spaces
                 })
                 .catch(error=>{
                     console.error(error);
@@ -65,6 +64,13 @@ export default {
     margin-top: 60px;
 }
 
+.nav{
+    a{
+        text-decoration: none;
+        color: black;
+        margin-left: 2em;
+    }
+}
 h1, h2 {
     font-weight: normal;
 }
@@ -77,10 +83,6 @@ ul {
 li {
     display: inline-block;
     margin: 0 10px;
-}
-
-a {
-
 }
 
 
