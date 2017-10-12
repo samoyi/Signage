@@ -1,13 +1,12 @@
 <template>
     <div class="post" v-if="info">
-        <h1 class="post__title">客户名：{{ $route.params.id }}</h1>
+        <h1 class="post__title">{{ $route.params.id }} * {{amount}}</h1>
         <table cellSpacing=0>
             <tr>
                 <th>版本号</th>
                 <th>视频地址</th>
                 <th>用户KEY</th>
                 <th>设备ID</th>
-                <th>客户品牌</th>
                 <th>门店城市</th>
                 <th>门店名称</th>
                 <th>水牌位置</th>
@@ -20,7 +19,6 @@
                 <td>{{signage.video_url}}</td>
                 <td>{{signage.user_key}}</td>
                 <td>{{signage.id}}</td>
-                <td>{{signage.brand}}</td>
                 <td>{{signage.city}}</td>
                 <td>{{signage.store}}</td>
                 <td>{{signage.position}}</td>
@@ -28,7 +26,7 @@
                 <td>{{signage.boxKey_end}}</td>
                 <td>{{signage.modifyTime}}</td>
             </tr>
-        </table>;
+        </table>
     </div>
 </template>
 
@@ -40,6 +38,7 @@ export default {
     data(){
         return {
             info: null,
+            amount: null,
         }
     },
     methods: {
@@ -49,7 +48,9 @@ export default {
                 })
                 .then(response=>{
                     console.log(this.id);
+                    console.log(response.data);
                     this.info = response.data[this.id]; // TODO why leading spaces
+                    this.amount = response.data[this.id].length; // TODO why leading spaces
                 })
                 .catch(error=>{
                     console.error(error);
