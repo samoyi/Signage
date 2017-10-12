@@ -23,7 +23,6 @@
 
 <script>
 import axios from 'axios';
-// :to="{ name: '/post/'+post, params: { id: post } }">
 export default {
     name: 'app',
     data () {
@@ -40,9 +39,7 @@ export default {
                     }
                 })
                 .then(response=>{
-                    console.log(response)
-                    // this.posts = response.data.map((item)=>item.toLowerCase()).sort(); // TODO why leading spaces
-                    this.posts = response.data.sort(); // TODO why leading spaces
+                    this.posts = response.data.sort();
                 })
                 .catch(error=>{
                     console.error(error);

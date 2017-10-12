@@ -43,9 +43,9 @@ class MySQLiController
         return $aKeyInfo['Column_name'];
     }
 
-	protected function fetchArray($result){
+	protected function fetchAssocArray($result){
 		$rows = array();
-	    while( $row=$result->fetch_array() ){
+	    while( $row=$result->fetch_assoc() ){
 	        $rows[] = $row;
 	    }
 	    return $rows;
@@ -201,21 +201,21 @@ class MySQLiController
     {
         $query = 'SHOW DATABASES';
         $result = mysqli_query($this->dbr, $query);
-		return $this->fetchArray($result);
+		return $this->fetchAssocArray($result);
     }
 
     //返回数据库的所有表组成的数组
     public function showTables(){
         $query = 'SHOW TABLES';
 		$result = mysqli_query($this->dbr, $query);
-        return $this->fetchArray($result);
+        return $this->fetchAssocArray($result);
     }
 
     //返回传递表格每列的模式信息组成的数组
     public function describeTable($tableName){
         $query = 'DESCRIBE ' . $tableName ;
 		$result = mysqli_query($this->dbr, $query);
-        return $this->fetchArray($result);
+        return $this->fetchAssocArray($result);
     }
 
     /* TODO 不对
@@ -315,7 +315,7 @@ class MySQLiController
     	$query = 'SELECT * FROM ' . $tableName . ' WHERE ' . $where;
     	$result = $this->dbr->query( $query );
     	if( $result ){
-			return $this->fetchArray($result);
+			return $this->fetchAssocArray($result);
 		}
 		else{
 			echo "<p>could not get rows</p>";
@@ -333,11 +333,11 @@ class MySQLiController
     	$result = $this->dbr->query( $query );
     	if( $result ){
 			if( empty($col) ){
-				return $this->fetchArray($result);
+				return $this->fetchAssocArray($result);
 			}
 			else{
 				$grouped = array();
-				while( $row=$result->fetch_array() ){
+				while( $row=$result->fetch_assoc() ){
 					if (isset($grouped[$row[$col]])) {
 						$grouped[$row[$col]][] = $row;
 					} else {
@@ -360,7 +360,7 @@ class MySQLiController
 		$query = 'SELECT DISTINCT ' .$col. ' FROM ' .$tableName;
 		$result = $this->dbr->query( $query );
 		if( $result ){
-			return $this->fetchArray($result);
+			return $this->fetchAssocArray($result);
 		}
 		else{
 			echo "<p>could not get types</p>";
@@ -381,7 +381,7 @@ class MySQLiController
         $query = 'SELECT * FROM ' . $tableName . $where . ' ORDER BY ' . $col . $asc;
         $result = $this->dbr->query( $query );
         if( $result ){
-			return $this->fetchArray($result);
+			return $this->fetchAssocArray($result);
 		}
 		else{
 			echo json_encode($result);

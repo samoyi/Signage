@@ -3,11 +3,11 @@
 <pre><?php
 
 
-require_once('Signage.class.php');
-$signage = new Signage();
-$aSignage = $signage->getSignageInfo();
-
-print_r($aSignage);
+require_once('MySQLiController.class.php');
+$mySQLiController = new MySQLiController( $dbr );
+$where = 'table_id=18';
+$result = $mySQLiController->getAll('adshow' );
+print_r($result);
 
 
 
