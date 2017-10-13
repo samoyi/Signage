@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <header>
+        <!-- <header>
             <h1>水牌管理</h1>
         </header>
         <main>
@@ -13,42 +13,56 @@
                     :to="'/post/'+post">
                     {{post}}
                 </router-link>
-            </nav>
-            <div class="content">
-                <router-view :id="$route.params.id"></router-view>
-            </div>
-        </main>
+                <router-link to="/brand/">
+                    水牌管理管理
+                </router-link>
+                <router-link to="/add/">
+                    新加品牌
+                </router-link>
+            </nav> -->
+            <!-- <div class="content"> -->
+                <router-view :id="$route.params.id" :signages="signages" :brands="posts"></router-view>
+            <!-- </div> -->
+        <!-- </main> -->
     </div>
 </template>
 
 <script>
-import axios from 'axios';
+import AJAX from './modules/ajax';
+
 export default {
-    name: 'app',
+    // name: 'app', // TODO What's the name attribute?
     data () {
         return {
             content: '',
+            infos: null,
             posts: null,
+            signages: null,
         }
     },
     methods: {
+        getInfo(){
+            let sURL = 'http://localhost/gits/Signage/php/ajax.php?act=signage',
+            fnSucc = (res)=>{ this.signages = JSON.parse(res); },
+            fnFail = (status)=>{ console.log(status); };
+            AJAX.get(sURL, fnSucc, fnFail);
+        },
         getBrands(){
-            axios.get('http://localhost/gits/Signage/php/ajax.php', {
-                    params: {
-                        act: 'brands',
-                    }
-                })
-                .then(response=>{
-                    this.posts = response.data.sort();
-                })
-                .catch(error=>{
-                    console.error(error);
-                })
+            let sURL = 'http://localhost/gits/Signage/php/ajax.php?act=brands',
+            fnSucc = (res)=>{ this.posts = JSON.parse(res); },
+            fnFail = (status)=>{ console.error(status); };
+            AJAX.get(sURL, fnSucc, fnFail);
+        },
+        addToData(){
+            alert(2222);
         }
     },
     created() {
         this.getBrands();
+        this.getInfo();
+        console.warn('app无论如何都会加载为什么');
     },
+
 }
 </script>
 
@@ -61,51 +75,4 @@ export default {
     color: #2c3e50;
     margin-top: 60px;
 }
-
-.nav{
-    a{
-        text-decoration: none;
-        color: black;
-        margin-left: 2em;
-    }
-}
-h1, h2 {
-    font-weight: normal;
-}
-
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    display: inline-block;
-    margin: 0 10px;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </style>

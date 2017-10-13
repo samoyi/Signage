@@ -1,6 +1,7 @@
 <template>
     <div class="post" v-if="infos">
-        <h1 class="post__title">{{ $route.params.id }} * {{this.infos[this.id].length}}</h1>
+        <h1 class="post__title">{{ $route.params.id }} * {{this.infos[this.id].length}}个</h1>
+
         <table cellSpacing=0>
             <tr>
                 <th>版本号</th>
@@ -20,8 +21,7 @@
                 <td v-else>{{signage.version_code}}</td>
                 <td v-if="editIndex===index"><input v-model="signage.video_url" type="text" :value="signage.video_url" /></td>
                 <td v-else>{{signage.video_url}}</td>
-                <td v-if="editIndex===index"><input v-model="signage.user_key" type="number" :value="signage.user_key" /></td>
-                <td v-else>{{signage.user_key}}</td>
+                <td>{{signage.user_key}}</td>
                 <td v-if="editIndex===index"><input v-model="signage.id" type="number" :value="signage.id" /></td>
                 <td v-else>{{signage.id}}</td>
                 <td v-if="editIndex===index"><input v-model="signage.city" type="text" :value="signage.city" /></td>
@@ -50,7 +50,7 @@
 import AJAX from '../modules/ajax';
 
 export default {
-    props: ['id'],
+    props: ['id', 'signages', 'brands'],
     data(){
         return {
             infos: null,
@@ -59,11 +59,17 @@ export default {
         };
     },
     methods: {
-        getInfo(){
-            let sURL = 'http://localhost/gits/Signage/php/ajax.php?act=signage',
-                fnSucc = (res)=>{ this.infos = JSON.parse(res); },
-                fnFail = (status)=>{ console.log(status); };
-            AJAX.get(sURL, fnSucc, fnFail);
+        classifyByBrand(aSignages){
+            let oInfo = {};
+            aSignages.forEach((item)=>{
+                if( item.brand in oInfo ){
+                    oInfo[item.brand].push(item);
+                }
+                else{
+                    oInfo[item.brand] = [item];
+                }
+            });
+            this.infos = oInfo;
         },
         modify(index){
             this.editIndex = index;
@@ -75,7 +81,7 @@ export default {
 
             let sURL = 'http://localhost/gits/Signage/php/ajax.php',
                 data = 'act=modify&info=' + JSON.stringify(this.infos[this.id][index]),
-                fnSuccessCallback = function(res){
+                fnSuccessCallback = (res)=>{
                     if( res.trim()==='true' ){
                         console.log('修改成功');
                     }
@@ -83,12 +89,11 @@ export default {
                         console.error(res);
                     }
                 },
-                fnFailCallback = function(err){ console.error(err); };
+                fnFailCallback = (err)=>{ console.error(err); };
             AJAX.post(sURL, data, fnSuccessCallback, fnFailCallback);
         },
         exitModification(index){
             this.editIndex = null;
-            console.log( this.unmodified );
             this.infos[this.id][index] = this.unmodified;
         },
         remove(index){
@@ -98,22 +103,31 @@ export default {
             if( window.confirm('删除 ' + oSignage['store'] + ' 店的 ' + sVideo + ' ？') ){
                 let sURL = 'http://localhost/gits/Signage/php/ajax.php',
                     data = 'act=remove&table_id=' + oSignage['table_id'],
-                    fnSuccessCallback = function(res){
+                    fnSuccessCallback = (res)=>{
                         if( res.trim()==='true' ){
                             console.log('删除成功');
                             this.infos[this.id].splice(index, 1);
+                            // this.brands.splice(index, 1);
                         }
                         else{
                             console.error(res);
                         }
                     },
-                    fnFailCallback = function(err){ console.error(err); };
+                    fnFailCallback = (err)=>{ console.error(err); };
                 AJAX.post(sURL, data, fnSuccessCallback, fnFailCallback);
             }
         },
     },
     created() {
-        this.getInfo();
+        if(this.signages){
+            this.classifyByBrand(this.signages);
+        }
+        else{ // 不是从上级路由而来
+            let sURL = 'http://localhost/gits/Signage/php/ajax.php?act=signage',
+            fnSucc = (res)=>{ this.classifyByBrand(JSON.parse(res)); },
+            fnFail = (status)=>{ console.log(status); };
+            AJAX.get(sURL, fnSucc, fnFail);
+        }
     },
 }
 </script>

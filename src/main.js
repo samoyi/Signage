@@ -1,8 +1,10 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import App from './App.vue';
-import Post from './components/Post.vue';
-import Hello from './components/Hello.vue';
+import Home from './components/Home.vue';
+import Brand from './components/Brand.vue';
+import Signages from './components/Signages.vue';
+import NewSignage from './components/NewSignage.vue';
 
 Vue.use(Router);
 
@@ -10,18 +12,20 @@ const router = new Router({
     routes: [
         {
             path: '/',
-            name: 'home',
-            component: Hello,
+            component: Home,
         },
         {
-            path: '/post/:id',
-            component: Post,
+            path: '/brand',
+            component: Brand,
         },
-        // {
-        //     path: '/post/ankela',
-        //     name: 'ankela',
-        //     component: Post,
-        // },
+        {
+            path: '/new',
+            component: NewSignage,
+        },
+        {
+            path: '/brand/:id',
+            component: Signages,
+        },
     ],
 });
 

@@ -1,18 +1,21 @@
 <template>
     <div>
-        <h1>{{ title }}</h1>
+        <new-brand v-if="signages"  :signages="signages" :keys="['1']"></new-brand>
     </div>
 </template>
 
 <script>
+import newBrand from './newBrand.vue';
 
 export default {
-
+    props: ['signages'],
     data(){
         return {
-            title: 'Home',
-
+            infos: null,
         }
+    },
+    components: {
+        newBrand,
     },
 }
 </script>

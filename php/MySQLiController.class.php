@@ -88,8 +88,7 @@ class MySQLiController
         }
         else
         {
-
-            return false;
+            return $this->dbr->error;
         }
     }
 
@@ -104,7 +103,7 @@ class MySQLiController
         else
         {
             echo 'could not drop the table';
-            return false;
+            return $this->dbr->error;
         }
     }
 
@@ -337,7 +336,7 @@ class MySQLiController
 			}
 			else{
 				$grouped = array();
-				while( $row=$result->fetch_assoc() ){
+				while( $row=$result->fetch_array() ){
 					if (isset($grouped[$row[$col]])) {
 						$grouped[$row[$col]][] = $row;
 					} else {
@@ -444,7 +443,7 @@ class MySQLiController
             return  $overlineNum;
         }
         else{
-            return false;
+            return $this->dbr->error;
         }
     }
 
@@ -462,7 +461,7 @@ class MySQLiController
 			return true;
 		}
 		else{
-			return false;
+			return $this->dbr->error;
 		}
 	}
 
@@ -477,7 +476,7 @@ class MySQLiController
 		}
 		else
 		{
-			return false;
+			return $this->dbr->error;
 		}
 	}
 
@@ -518,7 +517,7 @@ class MySQLiController
 			return true;
 		}
 		else{
-			return false;
+			return $this->dbr->error;
 		}
 	}
 
@@ -532,7 +531,7 @@ class MySQLiController
 			return true;
 		}
 		else{
-			return false;
+			return $this->dbr->error;
 		}
 	}
 
@@ -576,7 +575,7 @@ class MySQLiController
             return true;
         }
         else{
-            return false;
+            return $this->dbr->error;
         }
     }
 
@@ -592,7 +591,7 @@ class MySQLiController
 					return true;
 			}
 			else{
-					return false;
+					return $this->dbr->error;
 			}
 		}
 		else{
@@ -609,7 +608,7 @@ class MySQLiController
             return true;
         }
         else{
-            return false;
+            return $this->dbr->error;
         }
 	}
 }

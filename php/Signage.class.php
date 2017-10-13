@@ -23,7 +23,7 @@ class Signage{
 
     // 获得所有水牌信息
     public function getSignageInfo(){
-        $result = $this->mySQLiController->getAll(TABLE, 'brand');
+        $result = $this->mySQLiController->getAll(TABLE);
         $this->dbr->close();
         return $result;
     }
@@ -48,6 +48,20 @@ class Signage{
     public function removeSignage($table_id){
         $where = 'table_id="' . $table_id . '"';
         $result = $this->mySQLiController->deleteRow(TABLE, $where);
+        $this->dbr->close();
+        return $result;
+    }
+
+
+    // 添加一个水牌
+    public function addSignage($info){
+        $aCol = array();
+        $aValue = array();
+        foreach($info as $key=>$val){
+            $aCol[] = $key;
+            $aValue[] = $val;
+        }
+        $result = $this->mySQLiController->insertRow(TABLE, $aCol, $aValue);
         $this->dbr->close();
         return $result;
     }

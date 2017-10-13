@@ -16,14 +16,12 @@
     // 获得所有水牌信息
     if( isset($_GET['act']) && $_GET['act']==='signage' ){
             $aSignage = $signage->getSignageInfo();
-            // file_put_contents('sht.txt', json_encode($aSignage));
             echo json_encode($aSignage);
     }
 
     // 修改一个水牌
     if( isset($_POST['act']) && $_POST['act']==='modify' && isset($_POST['info']) ){
         $info = json_decode( $_POST['info'], true );
-        file_put_contents('inf.json', json_encode($info));
         $table_id = $info['table_id'];
         unset($info['table_id']);
         unset($info['modifyTime']);
@@ -37,5 +35,10 @@
         echo json_encode($result);
     }
 
+    // 添加一个水牌
+    if( isset($_POST['act']) && $_POST['act']==='add' && isset($_POST['info']) ){
+        $result = $signage->addSignage(json_decode(urldecode($_POST['info'])));
+        echo json_encode($result);
+    }
 
 ?>
