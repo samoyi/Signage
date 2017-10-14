@@ -1,7 +1,6 @@
 <template>
     <div class="post" v-if="infos">
         <h1 class="post__title">{{ $route.params.id }} * {{this.infos[this.id].length}}个</h1>
-
         <table cellSpacing=0>
             <tr>
                 <th>版本号</th>
@@ -16,6 +15,7 @@
                 <th>修改时间</th>
                 <th>编辑</th>
             </tr>
+            <!-- In modification mode, converts to input type -->
             <tr v-for="(signage,index) in this.infos[this.id]">
                 <td v-if="editIndex===index"><input v-model="signage.version_code" type="number" min="1" step="1" :value="signage.version_code" /></td>
                 <td v-else>{{signage.version_code}}</td>
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import AJAX from '../modules/ajax';
+import AJAX from '../../modules/ajax';
 
 export default {
     props: ['id', 'signages', 'brands'],
@@ -74,7 +74,6 @@ export default {
         modify(index){
             this.editIndex = index;
             this.unmodified = JSON.parse(JSON.stringify(this.infos[this.id][index]));
-            console.log(this.infos);
         },
         submitModification(index){
             this.editIndex = null;
@@ -99,17 +98,22 @@ export default {
         remove(index){
             let oSignage = this.infos[this.id][index],
                 url = oSignage['video_url'],
+                tableID = oSignage['table_id'],
                 sVideo = oSignage['video_url'].slice( url.lastIndexOf('/')+1 );
             if( window.confirm('删除 ' + oSignage['store'] + ' 店的 ' + sVideo + ' ？') ){
                 let sURL = 'http://localhost/gits/Signage/php/ajax.php',
                     data = 'act=remove&table_id=' + oSignage['table_id'],
                     fnSuccessCallback = (res)=>{
                         if( res.trim()==='true' ){
-                            console.log('删除成功');
                             this.infos[this.id].splice(index, 1);
-                            // this.brands.splice(index, 1);
+                            let nIndexInAll =  this.signages.findIndex(function(item){
+                                return item.table_id === tableID
+                            })
+                            this.signages.splice(nIndexInAll, 1);
+                            alert('删除成功');
                         }
                         else{
+                            alert('删除失败');
                             console.error(res);
                         }
                     },
@@ -118,15 +122,14 @@ export default {
             }
         },
     },
-    created() {
-        if(this.signages){
+    watch: { // after ajax finished
+        signages(data){
+            this.classifyByBrand(data);
+        },
+    },
+    created() { // ajax has finished before created
+        if(this.signages){ // gets signages from App.vue, not the Brand.vue
             this.classifyByBrand(this.signages);
-        }
-        else{ // 不是从上级路由而来
-            let sURL = 'http://localhost/gits/Signage/php/ajax.php?act=signage',
-            fnSucc = (res)=>{ this.classifyByBrand(JSON.parse(res)); },
-            fnFail = (status)=>{ console.log(status); };
-            AJAX.get(sURL, fnSucc, fnFail);
         }
     },
 }

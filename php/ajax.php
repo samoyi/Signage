@@ -38,7 +38,12 @@
     // 添加一个水牌
     if( isset($_POST['act']) && $_POST['act']==='add' && isset($_POST['info']) ){
         $result = $signage->addSignage(json_decode(urldecode($_POST['info'])));
-        echo json_encode($result);
+        if( $result === false ){
+            echo 'false';
+        }
+        else{
+            echo json_encode($result);
+        }
     }
 
 ?>

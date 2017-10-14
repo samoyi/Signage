@@ -2,8 +2,8 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import App from './App.vue';
 import Home from './components/Home.vue';
-import Brand from './components/Brand.vue';
-import Signages from './components/Signages.vue';
+import Brand from './components/manage/Brand.vue';
+import Signages from './components/manage/Signages.vue';
 import NewSignage from './components/NewSignage.vue';
 
 Vue.use(Router);

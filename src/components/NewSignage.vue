@@ -39,6 +39,10 @@ export default {
         }
     },
     methods: {
+        // create a random key which is not in current database
+        /*
+         * @para aSignages:  all existing signages
+         */
         createKey(aSignages){
             let sNewKey = randKey(16),
             aKeys = aSignages.map(item=>item.key);
@@ -62,20 +66,22 @@ export default {
             }
         },
         addSignage(ev){
-            ev.preventDefault();
-            let sPara = '';
-
+            ev.preventDefault(); // prevents submitting
             let sURL = 'http://localhost/gits/Signage/php/ajax.php',
                 data = 'act=add&info=' + encodeURIComponent(JSON.stringify(this.signageInfo)),
                 fnSuccessCallback = (res)=>{
                     if( res.trim()==='true' ){
-                        this.signages.push(this.signageInfo); // TODO Why this can modify parent's signages without emit?
-                        this.brands.push(this.signageInfo.brand); // TODO Why this can modify parent's signages without emit?
-                        // But when removing a signage, parent's brand will not be modified.
-                        // this.$emit('update:signages', this.signages);
+                        this.signages.push(this.signageInfo);
+                        if(!this.brands.includes(this.signageInfo.brand)){ // new brand
+                            this.brands.push(this.signageInfo.brand);
+                        }
                         alert('添加成功');
                     }
+                    else if(res.trim()==='false'){
+                        alert('添加失败。该ID已存在');
+                    }
                     else{
+                        alert('添加失败。' + res);
                         console.error(res);
                     }
                 },
@@ -87,7 +93,7 @@ export default {
         if(this.signages){
             this.signageInfo.user_key = this.createKey(this.signages);
         }
-        else{ // 不是从上级路由而来
+        else{
             let sURL = 'http://localhost/gits/Signage/php/ajax.php?act=signage',
             fnSucc = (res)=>{ this.signageInfo.user_key = this.createKey(JSON.parse(res)); },
             fnFail = (status)=>{ console.log(status); };

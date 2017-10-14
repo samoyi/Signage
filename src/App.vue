@@ -1,29 +1,13 @@
+<!--
+    root component
+    loads and manages common data
+    origin of routing path
+-->
+
 <template>
     <div id="app">
-        <!-- <header>
-            <h1>水牌管理</h1>
-        </header>
-        <main>
-            <nav class="nav">
-                <router-link
-                    v-for="post in posts"
-                    active-class="is-active"
-                    class="link"
-                    key="post.title"
-                    :to="'/post/'+post">
-                    {{post}}
-                </router-link>
-                <router-link to="/brand/">
-                    水牌管理管理
-                </router-link>
-                <router-link to="/add/">
-                    新加品牌
-                </router-link>
-            </nav> -->
-            <!-- <div class="content"> -->
-                <router-view :id="$route.params.id" :signages="signages" :brands="posts"></router-view>
-            <!-- </div> -->
-        <!-- </main> -->
+        <!-- TODO-1 -->
+        <router-view :id="$route.params.id" :signages="signages" :brands="brands"></router-view>
     </div>
 </template>
 
@@ -31,17 +15,15 @@
 import AJAX from './modules/ajax';
 
 export default {
-    // name: 'app', // TODO What's the name attribute?
+    // name: 'app', // TODO-2 What's the name attribute? Generated in webpack-simple
     data () {
         return {
-            content: '',
-            infos: null,
-            posts: null,
+            brands: null,
             signages: null,
         }
     },
     methods: {
-        getInfo(){
+        getSignages(){
             let sURL = 'http://localhost/gits/Signage/php/ajax.php?act=signage',
             fnSucc = (res)=>{ this.signages = JSON.parse(res); },
             fnFail = (status)=>{ console.log(status); };
@@ -49,30 +31,25 @@ export default {
         },
         getBrands(){
             let sURL = 'http://localhost/gits/Signage/php/ajax.php?act=brands',
-            fnSucc = (res)=>{ this.posts = JSON.parse(res); },
+            fnSucc = (res)=>{ this.brands = JSON.parse(res); },
             fnFail = (status)=>{ console.error(status); };
             AJAX.get(sURL, fnSucc, fnFail);
         },
         addToData(){
+            // Updata data modified by child components
             alert(2222);
         }
     },
     created() {
         this.getBrands();
-        this.getInfo();
-        console.warn('app无论如何都会加载为什么');
+        this.getSignages();
     },
-
 }
 </script>
 
-<style lang="scss">
+<style>
 #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     text-align: center;
-    color: #2c3e50;
     margin-top: 60px;
 }
 </style>

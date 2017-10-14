@@ -5,9 +5,9 @@
 
 require_once('MySQLiController.class.php');
 $mySQLiController = new MySQLiController( $dbr );
-$where = 'table_id=18';
-$result = $mySQLiController->getAll('adshow' );
-print_r($result);
+$where = 'id=19310997';
+$result = $mySQLiController->getRow('adshow', $where);
+print_r(sizeof($result));
 
 
 
