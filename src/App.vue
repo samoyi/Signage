@@ -35,10 +35,6 @@ export default {
             fnFail = (status)=>{ console.error(status); };
             AJAX.get(sURL, fnSucc, fnFail);
         },
-        addToData(){
-            // Updata data modified by child components
-            alert(2222);
-        }
     },
     created() {
         this.getBrands();
