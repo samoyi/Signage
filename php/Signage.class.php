@@ -56,10 +56,12 @@ class Signage{
     // 添加一个水牌
     public function addSignage($info){
         // Whether this id is being used
-        $where = 'id="' .$info->id. '"';
-        $result = $this->mySQLiController->getRow(TABLE, $where );
-        if( sizeof($result) !== 0 ){
-            return false;
+        if( $info->id !==0 ){ // 0 is default
+            $where = 'id="' .$info->id. '"';
+            $result = $this->mySQLiController->getRow(TABLE, $where );
+            if( sizeof($result) !== 0 ){
+                return false;
+            }
         }
 
         $aCol = array();

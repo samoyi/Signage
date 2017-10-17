@@ -4,11 +4,11 @@
         <form @submit="addSignage">
             <input type="text" v-model.trim="signageInfo.video_url" placeholder="视频链接" required />
             <input type="text" :value="signageInfo.user_key" disabled />
-            <input type="number" v-model.number="signageInfo.id" placeholder="设备ID" required />
+            <input type="number" v-model.number="signageInfo.id" value=0 placeholder="设备ID" required />
             <input type="text" v-model.trim="signageInfo.brand" placeholder="品牌名" required />
             <input type="text" v-model.trim="signageInfo.city" placeholder="城市名" required />
             <input type="text" v-model.trim="signageInfo.store" placeholder="店铺名" required />
-            <input type="number" v-model="signageInfo.position" placeholder="水牌位置序号" />
+            <input type="number" v-model="signageInfo.position" min=0 step=1 placeholder="水牌位置序号" />
             <input type="number" v-model="signageInfo.boxKey_front" placeholder="设备序列号（前）" />
             <input type="number" v-model="signageInfo.boxKey_end" placeholder="设备序列号（后）" />
             <input type="submit" value="添加" />
