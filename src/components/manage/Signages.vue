@@ -102,7 +102,7 @@ export default {
                 sVideo = oSignage['video_url'].slice( url.lastIndexOf('/')+1 );
             if( window.confirm('删除 ' + oSignage['store'] + ' 店的 ' + sVideo + ' ？') ){
                 let sURL = 'http://localhost/gits/Signage/php/ajax.php',
-                    data = 'act=remove&table_id=' + oSignage['table_id'],
+                    data = 'act=remove&user_key=' + oSignage['user_key'],
                     fnSuccessCallback = (res)=>{
                         if( res.trim()==='true' ){
                             this.infos[this.id].splice(index, 1);

@@ -22,16 +22,18 @@
     // 修改一个水牌
     if( isset($_POST['act']) && $_POST['act']==='modify' && isset($_POST['info']) ){
         $info = json_decode( $_POST['info'], true );
-        $table_id = $info['table_id'];
-        unset($info['table_id']);
-        unset($info['modifyTime']);
-        $result = $signage->modifySignage($table_id, $info);
+        $user_key = $info['user_key'];
+        unset($info['user_key']);
+        // $table_id = $info['table_id'];
+        // unset($info['table_id']);
+        // unset($info['modifyTime']);
+        $result = $signage->modifySignage($user_key, $info);
         echo json_encode($result);
     }
 
     // 删除一个水牌
-    if( isset($_POST['act']) && $_POST['act']==='remove' && isset($_POST['table_id']) ){
-        $result = $signage->removeSignage($_POST['table_id']);
+    if( isset($_POST['act']) && $_POST['act']==='remove' && isset($_POST['user_key']) ){
+        $result = $signage->removeSignage($_POST['user_key']);
         echo json_encode($result);
     }
 

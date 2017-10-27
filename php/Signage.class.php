@@ -29,7 +29,7 @@ class Signage{
     }
 
     // 修改一个水牌
-    public function modifySignage($table_id, $info){
+    public function modifySignage($user_key, $info){
         $aLocValueCol = array();
         $aNewValue = array();
         foreach($info as $key=>$val ){
@@ -37,7 +37,7 @@ class Signage{
             $aNewValue[] = $val;
         }
 
-        $where = 'table_id="' . $table_id . '"';
+        $where = 'user_key="' . $user_key . '"';
         $result = $this->mySQLiController->updateData(TABLE, $aLocValueCol, $aNewValue, $where);
         $this->dbr->close();
         return $result;
@@ -45,8 +45,8 @@ class Signage{
 
 
     // 删除一个水牌
-    public function removeSignage($table_id){
-        $where = 'table_id="' . $table_id . '"';
+    public function removeSignage($user_key){
+        $where = 'user_key="' . $user_key . '"';
         $result = $this->mySQLiController->deleteRow(TABLE, $where);
         $this->dbr->close();
         return $result;
