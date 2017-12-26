@@ -1,6 +1,6 @@
 <template>
-    <div class="post" v-if="infos">
-        <h1 class="post__title">{{ $route.params.id }} * {{this.infos[this.id].length}}个</h1>
+    <div class="post" v-if="infos && infos[id]"> <!-- 删光之后length为0 -->
+        <h1 class="post__title">{{ $route.params.id }} * {{infos[id].length}}个</h1>
         <table cellSpacing=0>
             <tr>
                 <th>版本号</th>
@@ -16,7 +16,7 @@
                 <th>编辑</th>
             </tr>
             <!-- In modification mode, converts to input type -->
-            <tr v-for="(signage,index) in this.infos[this.id]">
+            <tr v-for="(signage,index) in this.infos[this.id]" :key="signage.user_key">
                 <td v-if="editIndex===index"><input v-model="signage.version_code" type="number" min="1" step="1" :value="signage.version_code" /></td>
                 <td v-else>{{signage.version_code}}</td>
                 <td v-if="editIndex===index"><input v-model="signage.video_url" type="text" :value="signage.video_url" /></td>
@@ -105,12 +105,17 @@ export default {
                     data = 'act=remove&user_key=' + oSignage['user_key'],
                     fnSuccessCallback = (res)=>{
                         if( res.trim()==='true' ){
+                            console.log(JSON.stringify(this.infos[this.id]));
+                            console.log(index);
                             this.infos[this.id].splice(index, 1);
+                            console.log(JSON.stringify(this.infos[this.id]));
                             let nIndexInAll =  this.signages.findIndex(function(item){
                                 return item.table_id === tableID
                             })
-                            this.signages.splice(nIndexInAll, 1);
                             alert('删除成功');
+                            setTimeout(()=>{
+                                this.signages.splice(nIndexInAll, 1);
+                            }, 2000);
                         }
                         else{
                             alert('删除失败');
@@ -125,6 +130,12 @@ export default {
     watch: { // after ajax finished
         signages(data){
             this.classifyByBrand(data);
+        },
+        infos(newVal){
+            if(!(this.id in newVal)){ // 删光了
+                this.$emit('deleteBrand', this.id);
+                this.$router.go(-1);
+            }
         },
     },
     created() { // ajax has finished before created

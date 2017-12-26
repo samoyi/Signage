@@ -7,7 +7,7 @@
 <template>
     <div id="app">
         <!-- TODO-1 -->
-        <router-view :id="$route.params.id" :signages="signages" :brands="brands"></router-view>
+        <router-view :id="$route.params.id" :signages="signages" :brands="brands" @deleteBrand="deleteBrand"></router-view>
     </div>
 </template>
 
@@ -34,6 +34,10 @@ export default {
             fnSucc = (res)=>{ this.brands = JSON.parse(res); },
             fnFail = (status)=>{ console.error(status); };
             AJAX.get(sURL, fnSucc, fnFail);
+        },
+        deleteBrand(sBrand){
+            let index = this.brands.indexOf(sBrand);
+            this.brands.splice(index, 1);
         },
     },
     created() {

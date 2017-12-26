@@ -4,7 +4,7 @@
         <form @submit="addSignage">
             <input type="text" v-model.trim="signageInfo.video_url" placeholder="视频链接" required />
             <input type="text" :value="signageInfo.user_key" disabled />
-            <input type="number" v-model.number="signageInfo.id" value=0 placeholder="设备ID" required />
+            <input type="number" v-model.number="signageInfo.id" placeholder="设备ID" required />
             <input type="text" v-model.trim="signageInfo.brand" placeholder="品牌名" required />
             <input type="text" v-model.trim="signageInfo.city" placeholder="城市名" required />
             <input type="text" v-model.trim="signageInfo.store" placeholder="店铺名" required />
@@ -27,7 +27,7 @@ export default {
                 version_code: 1,
                 video_url: null,
                 user_key: '正在加载...',
-                id: null,
+                id: 0,
                 agent: 0,
                 brand: null,
                 store: null,
@@ -76,6 +76,21 @@ export default {
                             this.brands.push(this.signageInfo.brand);
                         }
                         alert('添加成功');
+
+                        this.signageInfo = {
+                            version_code: 1,
+                            video_url: null,
+                            user_key: '正在加载...',
+                            id: 0,
+                            agent: 0,
+                            brand: null,
+                            store: null,
+                            city: null,
+                            position: null,
+                            boxKey_front: null,
+                            boxKey_end: null,
+                        };
+                        this.signageInfo.user_key = this.createKey(this.signages);
                     }
                     else if(res.trim()==='false'){
                         alert('添加失败。该ID已存在');
