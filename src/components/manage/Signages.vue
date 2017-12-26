@@ -98,24 +98,24 @@ export default {
         remove(index){
             let oSignage = this.infos[this.id][index],
                 url = oSignage['video_url'],
-                tableID = oSignage['table_id'],
+                // tableID = oSignage['table_id'],
+                userKey = oSignage['user_key'],
                 sVideo = oSignage['video_url'].slice( url.lastIndexOf('/')+1 );
             if( window.confirm('删除 ' + oSignage['store'] + ' 店的 ' + sVideo + ' ？') ){
                 let sURL = 'http://localhost/gits/Signage/php/ajax.php',
                     data = 'act=remove&user_key=' + oSignage['user_key'],
                     fnSuccessCallback = (res)=>{
                         if( res.trim()==='true' ){
-                            console.log(JSON.stringify(this.infos[this.id]));
-                            console.log(index);
                             this.infos[this.id].splice(index, 1);
-                            console.log(JSON.stringify(this.infos[this.id]));
                             let nIndexInAll =  this.signages.findIndex(function(item){
-                                return item.table_id === tableID
+                                // 不能通过tableID找，因为新加的没有tableID。
+                                // 即新加的tableID为undefined。如果一次新加了多个，
+                                // 则所有的tableID都是相同的
+                                // return item.tableID === tableID;
+                                return item.user_key === userKey;
                             })
+                            this.signages.splice(nIndexInAll, 1);
                             alert('删除成功');
-                            setTimeout(()=>{
-                                this.signages.splice(nIndexInAll, 1);
-                            }, 2000);
                         }
                         else{
                             alert('删除失败');
